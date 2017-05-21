@@ -1,0 +1,20 @@
+{
+    "compilerOptions": {
+        "module": "commonjs",
+        "target": "es2015",
+        "noImplicitAny": false,
+        "sourceMap": true,
+        "outDir": "dist",
+        "types" : [
+            "node"
+        ]
+    },
+    "files": [
+        "index.ts",
+        "lib/Core.ts",
+        "lib/Parser.ts"
+    ],
+    "exclude": [
+        "node_modules"
+    ]
+}

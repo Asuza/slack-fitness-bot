@@ -1,0 +1,7 @@
+{
+    "greeting": "GET READY TO WORKOUT IN %d MINUTES. _Tell me \"join\" to participate._",
+    "participant_added": "%s is going to get fit.",
+    "participant_removed": "Peace out, %s.",
+    "announcement": "DO AN EXERCISE: %s",
+    "announcement_upcoming": "NEXT ANNOUNCEMENT IN %d MINUTES"
+}
