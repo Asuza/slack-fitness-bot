@@ -1,18 +1,16 @@
 {
     "compilerOptions": {
+        "target": "es6",
         "module": "commonjs",
-        "target": "es2015",
-        "noImplicitAny": false,
-        "sourceMap": true,
         "outDir": "dist",
-        "types" : [
-            "node"
-        ]
+        "sourceMap": true
     },
     "files": [
-        "index.ts",
-        "lib/Core.ts",
-        "lib/Parser.ts"
+        "./node_modules/@types/node/index.d.ts",
+        "./node_modules/@types/core-js/index.d.ts"
+    ],
+    "include": [
+        "src/**/*.ts"
     ],
     "exclude": [
         "node_modules"
