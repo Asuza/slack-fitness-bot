@@ -1,5 +1,5 @@
 {
-    "greeting": "GET READY TO WORKOUT IN %d MINUTES. _Tell me \"join\" to participate._",
+    "greeting": "GET READY TO WORKOUT IN %d MINUTES, <!here|here>",
     "participant_added": "%s is going to get fit.",
     "participant_removed": "Peace out, %s.",
     "announcement": "DO AN EXERCISE: %s",

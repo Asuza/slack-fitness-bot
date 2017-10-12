@@ -10,20 +10,73 @@ let participants = new Set();
 let announcements = [];
 let api;
 
+let API_EVENTS;
+
 class Core {
 
     channel: string;
+    userRe: RegExp;
 
-    constructor (rtm) {
+    constructor (rtm, rtmEvents) {
         api = rtm;
+        API_EVENTS = rtmEvents;
     }
 
-    initChannel (channel) {
+    initChannel (channelId) {
 
-        this.channel = channel;
+        this.channel = channelId;
+
+        let channel = api.dataStore.getChannelById(channelId);
+
+        if (channel.members && channel.members.length) {
+            channel.members.forEach(memberId => {
+                let memberInfo = api.dataStore.getUserById(memberId);
+
+                if (memberInfo && memberInfo.presence === 'active') {
+                    this.participantAdd(memberId);
+                }
+            });
+        }
 
         this.sendMessage(messages.greeting, config.minutes_between_announcements);
+        this.handleEvents();
         this.startAnnouncementTimer();
+    }
+
+    handleEvents () {
+        api.on(API_EVENTS.MESSAGE, message => {
+            if (this.userRe.test(message.text)) {
+                this.processMessage(message);
+            }
+        });
+
+        api.on(API_EVENTS.MEMBER_JOINED_CHANNEL, message => {
+            let memberInfo = api.dataStore.getUserById(message.user);
+
+            if (memberInfo && memberInfo.presence === 'active') {
+                this.participantAdd(message.user);
+            }
+        });
+
+        api.on(API_EVENTS.MEMBER_LEFT_CHANNEL, message => {
+            this.participantRemove(message.user);
+        });
+
+        api.on(API_EVENTS.PRESENCE_CHANGE, message => {
+            if (message.presence === 'away') {
+                this.participantRemove(message.user);
+            } else {
+                this.participantAdd(message.user);
+            }
+        });
+
+        api.on(API_EVENTS.MANUAL_PRESENCE_CHANGE, message => {
+            if (message.presence === 'away') {
+                this.participantRemove(message.user);
+            } else {
+                this.participantAdd(message.user);
+            }
+        });
     }
 
     sendMessage (...params) {
@@ -49,6 +102,7 @@ class Core {
     announce () {
         if (participants.size > 0) {
             api.sendMessage(format(messages.announcement, this.getParticipantsFormatted(), config.minutes_between_announcements), this.channel);
+            this.startAnnouncementTimer();
         } else {
             console.log('There are currently no participants.');
         }
@@ -70,16 +124,18 @@ class Core {
         return false;
     }
 
-    participantAdd (message) {
-        console.log(`Added participant "${api.dataStore.getUserById(message.user).name}"`)
-        participants.add(message.user);
-        api.sendMessage(format(messages.participant_added, `<@${message.user}>`), message.channel);
+    participantAdd (memberId: string) {
+        console.log(`Added ${memberId}`);
+        participants.add(memberId);
     }
 
-    participantRemove (message) {
-        console.log(`Removed participant "${api.dataStore.getUserById(message.user).name}"`)
-        participants.delete(message.user);
-        api.sendMessage(format(messages.participant_removed, `<@${message.user}>`), message.channel);
+    participantRemove (memberId: string) {
+        console.log(`Removed ${memberId}`);
+        participants.delete(memberId);
+    }
+
+    presenceChange (message) {
+
     }
 
     getParticipantsFormatted () {

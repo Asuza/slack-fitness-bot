@@ -1,4 +1,3 @@
-
 const RtmClient = require('@slack/client').RtmClient;
 const CLIENT_EVENTS = require('@slack/client').CLIENT_EVENTS;
 const RTM_EVENTS = require('@slack/client').RTM_EVENTS;
@@ -26,20 +25,13 @@ let memberOfChannelsByName = [];
 let memberOfChannelsById = [];
 let participants = [];
 
+console.log('Starting RTM client...');
 rtm.start();
 
 rtm.on(CLIENT_EVENTS.RTM.AUTHENTICATED, function (rtmStartData) {
   startData = rtmStartData;
   userRe = new RegExp(`<@${startData.self.id}>`);
   console.log(`Logged in to team ${rtmStartData.team.name} as user ${rtmStartData.self.name}`);
-});
-
-rtm.on(RTM_EVENTS.MESSAGE, function handleRtmMessage(message) {
-  if (userRe.test(message.text)) {
-    cores.forEach(core => {
-      core.processMessage(message);
-    });
-  }
 });
 
 rtm.on(RTM_EVENTS.REACTION_ADDED, function handleRtmReactionAdded(reaction) {
@@ -52,10 +44,6 @@ rtm.on(RTM_EVENTS.REACTION_ADDED, function handleRtmReactionAdded(reaction) {
       rtm.dataStore.getUserById(reaction.user).name
     );
   }
-});
-
-rtm.on(RTM_EVENTS.CHANNEL_JOINED, function handleRtmChannelJoined (joined) {
-  rtm.sendMessage(messages.channel_join, joined.channel.id)
 });
 
 // Wait for the client to connect
@@ -81,8 +69,9 @@ rtm.on(CLIENT_EVENTS.RTM.RTM_CONNECTION_OPENED, function() {
   console.log('Member of channel(s):', memberOfChannelsByName);
 
   memberOfChannelsById.forEach(channel => {
-    let coreInstance = new Core(rtm);
+    let coreInstance = new Core(rtm, RTM_EVENTS);
 
+    coreInstance.userRe = userRe;
     coreInstance.initChannel(channel);
 
     cores.push(coreInstance);
