@@ -11,7 +11,7 @@ let conversationId = 'tbd';
 
 /**
  * Gets a random integer up to the max number provided.
- * 
+ *
  * @param {Number} max
  *     The maximum integer to get
  */
@@ -22,7 +22,7 @@ function getRandomInt (max) {
 /**
  * Accepts a template and variables to populate the template with, and sends
  * that message to the configured channel.
- * 
+ *
  * @param {*} params
  *     Any number of parameters to create a message. The first argument should
  *     be the string to be formatted, followed by any arguments that the string
@@ -59,7 +59,7 @@ function sendRandomStretchMessage () {
  * Searches the list of conversations for one matching the given name, then
  * passes the ID of that conversation to the callback function. If the channel
  * cannot be found, the callback will not be called.
- * 
+ *
  * @param {String} name
  *     The name of the channel being looked for.
  * @param {Function} callback
@@ -88,4 +88,15 @@ getConversationId(process.env.SLACK_CHANNEL, id => {
     conversationId = id;
     sendMessage(messages.greeting, minutesBetweenExercises.stretches);
     setInterval(sendRandomStretchMessage, minutesBetweenExercises.stretches * 60000);
+});
+
+let exitAttempt;
+process.on('SIGINT', () => {
+    if (!exitAttempt) {
+        sendMessage(messages.exit);
+        console.log('Press Ctrl-C again to exit.');
+        exitAttempt = true;
+    } else {
+        process.exit(0);
+    }
 });

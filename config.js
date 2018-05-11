@@ -4,11 +4,12 @@ module.exports = {
         icon_emoji: ':arnold:'
     },
     minutesBetweenExercises: {
-        stretches: 1
+        stretches: 40
     },
     messages: {
-        "greeting": "GET READY TO STRETCH IN %d MINUTES, <!here|here>",
-        "announcement_upcoming": "NEXT ANNOUNCEMENT IN %d MINUTES"
+        "greeting": "KNOCK-KNOCK. GET READY TO STRETCH IN %d MINUTES, <!here|here>!",
+        "announcement_upcoming": "NEXT ANNOUNCEMENT IN %d MINUTES",
+        "exit": "I'LL BE BACK."
     },
     exercises: {
         stretches: [
