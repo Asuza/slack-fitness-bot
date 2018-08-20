@@ -1,6 +1,6 @@
 const { WebClient } = require('@slack/client');
 const { format } = require('util');
-const { bot, minutesBetweenExercises, messages, exercises } = require('./config');
+const { bot, minutesBetweenExercises, messages, exercises, schedule } = require('./config');
 
 // An access token (from your Slack app or custom integration - xoxp, xoxb, or xoxa)
 const token = process.env.SLACK_TOKEN;
@@ -29,6 +29,12 @@ function getRandomInt (max) {
  *     might need.
  */
 function sendMessage (...params) {
+
+    if (!currentHourIsWithinSchedule()) {
+        console.log('Currently outside of the specified schedule. Doing nothing.');
+        return;
+    }
+
     // See: https://api.slack.com/methods/chat.postMessage
     web.chat.postMessage({
         channel: conversationId,
@@ -46,13 +52,23 @@ function sendMessage (...params) {
 
 /**
  * Sends a random stretch message to all users in the channel.
+ *
+ * @param {Number} delayInMinutes
+ *     The time until the next exercise will be announced.
  */
-function sendRandomStretchMessage () {
+function sendRandomStretchMessage (delayInMinutes) {
+    console.log(`Sending message in ${delayInMinutes} minutes`);
     let exerciseIndex = getRandomInt(exercises.stretches.length - 1);
     let exercise = exercises.stretches[exerciseIndex];
 
-    sendMessage('Time to stretch, <!here|here>!', '\n*' + exercise[0] + '*\n_' + exercise[1] + '_');
-    sendMessage(messages.announcement_upcoming, minutesBetweenExercises.stretches);
+    let message = [
+        messages.announcement_start,
+        `*${exercise[0]}*`,
+        `_${exercise[1]}_`,
+        messages.announcement_upcoming
+    ].join('\n');
+
+    sendMessage(message, delayInMinutes);
 }
 
 /**
@@ -86,11 +102,37 @@ function getConversationId (name, callback) {
 getConversationId(process.env.SLACK_CHANNEL, id => {
     console.log(`Will post messages to channel "${process.env.SLACK_CHANNEL}" (${id})`);
     conversationId = id;
-    sendMessage(messages.greeting, minutesBetweenExercises.stretches);
-    setInterval(sendRandomStretchMessage, minutesBetweenExercises.stretches * 60000);
+
+    let warmupInMinutes = Math.round(minutesBetweenExercises.stretches / 4);
+    let warmupInMilliseconds = warmupInMinutes * 60000;
+    let restInMinutes = minutesBetweenExercises.stretches;
+    let restInMilliseconds = restInMinutes * 60000;
+
+    sendMessage(messages.greeting, warmupInMinutes);
+
+    setTimeout(() => {
+        sendRandomStretchMessage(restInMinutes);
+        setInterval(() => {
+            sendRandomStretchMessage(restInMinutes);
+        }, restInMilliseconds);
+    }, warmupInMilliseconds);
 });
 
+function currentHourIsWithinSchedule() {
+    if (schedule) {
+        let date = new Date();
+        let currentHour = date.getHours();
+
+        if (currentHour < schedule.startHour || schedule.endHour <= currentHour) {
+            return false;
+        }
+    }
+
+    return true;
+}
+
 let exitAttempt;
+
 process.on('SIGINT', () => {
     if (!exitAttempt) {
         sendMessage(messages.exit);

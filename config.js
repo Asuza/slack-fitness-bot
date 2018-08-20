@@ -7,8 +7,9 @@ module.exports = {
         stretches: 40
     },
     messages: {
-        "greeting": "KNOCK-KNOCK. GET READY TO STRETCH IN %d MINUTES, <!here|here>!",
-        "announcement_upcoming": "NEXT ANNOUNCEMENT IN %d MINUTES",
+        "greeting": "KNOCK-KNOCK. GET READY TO STRETCH IN %d MINUTES!",
+        "announcement_start": "Time to stretch, <!here|here>!",
+        "announcement_upcoming": "NEXT ANNOUNCEMENT IN %d MINUTES.",
         "exit": "I'LL BE BACK."
     },
     exercises: {
@@ -24,6 +25,15 @@ module.exports = {
             ['Knee Hugger', `With a bent knee, lift your right leg up and grab it with your arms and pull it in as close to your chest as you can. Hold for 5–10 seconds and make sure and do it on the left side, too.`],
             ['Reach and Bend', `Extend your right arm over your head and reach out as far as you can to the left and gently bend over. Hold for a few seconds and do it the other way.`],
             ['Knee Press', `This one stretches out the glutes. With your right ankle on your left knee, gently press against the right knee a few times. Of course, after you’re done with the right side, be sure and give the left side some love, too.`],
+            // From other places
+            ['Kneeling Reach and Bend', 'Kneel on the floor with your legs together, back straight, and core tight. Extend your left leg to the side, keep it perpendicular to your body. Extend your right arm overhead, rest your left arm on your left leg, and gently bend your torso and right arm to the left side. Hold for 30 seconds. Repeat on the other side.'],
+            ['Standing Quadriceps Stretch', 'Hold one foot behind your body with the opposite hand. Pull your foot upwards, and push your knee backward, core tight. Hold, and repeat on the opposite side.'],
+            ['Wrist Extension', 'Hold one arm forward, palm facing down. Raise the fingers and palm and the wrist. Grab your fingers with your other hand and pull them back towards your body. Hold and repeat on the other hand.'],
+            ['Wrist Flexion', 'Hold one arm forward, palm facing down. Drop the fingers and palm and the wrist. Grab your fingers with your other hand and pull them towards your body. Hold and repeat on the other hand.'],
         ]
+    },
+    schedule: {
+        startHour: 9,
+        endHour: 18
     }
 };
